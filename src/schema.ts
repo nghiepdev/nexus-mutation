@@ -26,23 +26,23 @@ export const dynamicMutationPlugin = (connectionPluginConfig?: any) => {
               b.addType(
                 objectType({
                   name: payloadName,
-                  definition: fieldConfig.definitionPayload,
+                  definition: fieldConfig.payload,
                 })
               )
             }
 
-            if (fieldConfig.definitionInput && !b.hasType(inputName)) {
+            if (fieldConfig.input && !b.hasType(inputName)) {
               b.addType(
                 inputObjectType({
                   name: inputName,
-                  definition: fieldConfig.definitionInput,
+                  definition: fieldConfig.input,
                 })
               )
             }
 
             // Add the field to the type.
             t.field(fieldName, {
-              args: fieldConfig.definitionInput
+              args: fieldConfig.input
                 ? {
                     input: arg({
                       type: inputName as any,
