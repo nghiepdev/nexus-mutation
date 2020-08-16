@@ -1,18 +1,23 @@
 import { RuntimePlugin } from 'nexus/plugin'
 
-export const plugin: RuntimePlugin = () => project => {
+import { dynamicMutationPlugin } from './schema'
+
+export const plugin: RuntimePlugin = () => (project) => {
   return {
     context: {
-      create: _req => {
+      create: (_req) => {
         return {
-          'nexus-plugin-dynamic-mutation': 'hello world!'
+          'nexus-plugin-dynamic-mutation': 'hello world!',
         }
       },
       typeGen: {
         fields: {
-          'nexus-plugin-dynamic-mutation': 'string'
-        }
-      }
-    }
+          'nexus-plugin-dynamic-mutation': 'string',
+        },
+      },
+    },
+    schema: {
+      plugins: [dynamicMutationPlugin({})],
+    },
   }
 }
