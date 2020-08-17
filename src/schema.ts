@@ -26,6 +26,7 @@ export const dynamicMutationPlugin = (connectionPluginConfig?: any) => {
               b.addType(
                 objectType({
                   name: payloadName,
+                  nonNullDefaults: fieldConfig.nonNullDefaults,
                   definition: fieldConfig.payload,
                 })
               )
@@ -35,6 +36,7 @@ export const dynamicMutationPlugin = (connectionPluginConfig?: any) => {
               b.addType(
                 inputObjectType({
                   name: inputName,
+                  nonNullDefaults: fieldConfig.nonNullDefaults,
                   definition: fieldConfig.input,
                 })
               )
@@ -42,6 +44,8 @@ export const dynamicMutationPlugin = (connectionPluginConfig?: any) => {
 
             // Add the field to the type.
             t.field(fieldName, {
+              type: payloadName as any,
+              description: fieldConfig.description,
               args: fieldConfig.input
                 ? {
                     input: arg({
@@ -50,7 +54,6 @@ export const dynamicMutationPlugin = (connectionPluginConfig?: any) => {
                     }),
                   }
                 : {},
-              type: payloadName as any,
               resolve: fieldConfig.resolve,
             })
           },
