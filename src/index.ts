@@ -6,8 +6,4 @@ export const dynamicMutationPlugin: PluginEntrypoint = () => ({
     module: require.resolve('./runtime'),
     export: 'plugin',
   },
-  worktime: {
-    module: require.resolve('./worktime'),
-    export: 'plugin',
-  },
 })
