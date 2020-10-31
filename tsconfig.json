@@ -1,23 +1,12 @@
 {
-  "include": [
-    "src",
-    "types"
-  ],
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES2016",
     "module": "CommonJS",
-    "lib": [
-      "esnext"
-    ],
-    "importHelpers": true,
+    "lib": ["esnext"],
     "declaration": true,
-    "outDir": "dist",
-    "sourceMap": true,
-    "rootDir": "src",
+    "outDir": ".",
     "strict": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true
-  }
+    "removeComments": true
+  },
+  "exclude": ["index.ts"]
 }

@@ -1,45 +1,30 @@
 {
   "name": "nexus-plugin-dynamic-mutation",
-  "version": "0.0.0",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "module": "dist/nexus-plugin-dynamic-mutation.esm.js",
-  "description": "A Nexus framework plugin",
-  "files": [
-    "dist"
-  ],
+  "version": "0.1.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "description": "Nexus plugin to ease create dynamic mutation.",
   "scripts": {
-    "dev": "tsc --watch",
-    "build:doc": "doctoc README.md --notitle",
-    "build:ts": "tsc",
-    "build": "yarn -s build:ts && yarn -s build:doc",
-    "test": "jest",
-    "publish:stable": "dripip stable",
-    "publish:preview": "dripip preview",
-    "publish:pr": "dripip pr",
-    "prepack": "yarn -s build"
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ]
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.10",
-    "doctoc": "^1.4.0",
-    "dripip": "^0.10.0",
-    "jest": "^26.4.0",
-    "jest-watch-typeahead": "^0.6.0",
-    "nexus": "^0.26.1",
-    "ts-jest": "^26.2.0",
-    "typescript": "^3.9.7"
-  }
+    "@nexus/schema": "^0.16.0",
+    "graphql": "^15.4.0",
+    "typescript": "^4.0.5"
+  },
+  "peerDependencies": {
+    "@nexus/schema": "^0.16.0",
+    "graphql": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nghiepit/nexus-plugin-dynamic-mutation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nghiepit/nexus-plugin-dynamic-mutation/issues"
+  },
+  "homepage": "https://github.com/nghiepit/nexus-plugin-dynamic-mutation",
+  "author": "Nghiep <me@nghiepit.dev>",
+  "license": "MIT"
 }

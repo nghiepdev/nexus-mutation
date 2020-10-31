@@ -1,11 +1,24 @@
 # nexus-plugin-dynamic-mutation
 
-## Example
+[![NPM version](https://img.shields.io/npm/v/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
+[![NPM yearly download](https://img.shields.io/npm/dy/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
 
-**Input**
+> Nexus plugin to ease create dynamic mutation.
+
+## Installation
+
+```bash
+yarn add nexus-plugin-dynamic-mutation
+```
+
+## Usage
+
+### Input
 
 ```js
-schema.extendType({
+import {extendType} from '@nexus/schema';
+
+export const Mutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.dynamicMutation('createUser', {
@@ -21,19 +34,23 @@ schema.extendType({
       },
       payload(t) {
         t.string('message')
-        t.field('data', {
+        t.field('user', {
           type: 'User',
         })
       },
-      resolve(_, args, ctx) {
-        return ...
+      async resolve(_, args, ctx) {
+        const user = await fetch(...);
+        return {
+          message: "Success!",
+          user
+        }
       },
     })
   },
 })
 ```
 
-**Output**
+### Output
 
 ```graphql
 type Mutation {
@@ -47,6 +64,10 @@ input CreateUserInput {
 
 type CreateUserPayload {
   message: String
-  data: User
+  user: User
 }
 ```
+
+## License
+
+MIT © [Nghiep](mailto:me@nghiepit.dev)
