@@ -29,30 +29,35 @@ export const Mutation = extendType({
         output: false,
       },
       input(t) {
-        t.string('fullname')
-        t.string('email')
+        t.string('fullname');
+        t.string('email');
       },
       payload(t) {
-        t.string('message')
+        t.string('message');
         t.field('user', {
           type: 'User',
-        })
+        });
       },
       async resolve(_, args, ctx) {
-        const user = await fetch(...);
+        const {input} = args;
+        const user = await fetch('/create-user', {
+          method: 'POST',
+          body: JSON.stringify(input),
+        });
+
         return {
-          message: "Success!",
-          user
-        }
+          message: 'Success!',
+          user,
+        };
       },
-    })
+    });
   },
-})
+});
 ```
 
 ### Output
 
-```graphql
+```gql
 type Mutation {
   createUser(input: CreateUserInput!): CreateUserPayload!
 }
