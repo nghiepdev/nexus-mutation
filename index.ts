@@ -4,7 +4,8 @@ import {
   inputObjectType,
   dynamicOutputMethod,
   arg,
-} from '@nexus/schema'
+  nonNull,
+} from 'nexus';
 
 interface MutationDynamicPluginConfig {
   /**
@@ -13,20 +14,20 @@ interface MutationDynamicPluginConfig {
    * @default 'dynamicMutation'
    */
 
-  nexusFieldName?: string
+  nexusFieldName?: string;
 }
 
 export const mutationPayloadPlugin = (
-  connectionPluginConfig?: MutationDynamicPluginConfig
+  connectionPluginConfig?: MutationDynamicPluginConfig,
 ) => {
   const pluginConfig: MutationDynamicPluginConfig = {
     ...connectionPluginConfig,
-  }
+  };
 
   return plugin({
     name: 'Dynamic Mutation Plugin',
     onInstall(b) {
-      const { nexusFieldName = 'dynamicMutation' } = pluginConfig
+      const {nexusFieldName = 'dynamicMutation'} = pluginConfig;
 
       b.addType(
         dynamicOutputMethod({
@@ -43,10 +44,10 @@ export const mutationPayloadPlugin = (
                 resolve: core.FieldResolver<TypeName, any>
               }
             ): void`,
-          factory({ typeDef: t, args: factoryArgs }) {
-            const [fieldName, fieldConfig] = factoryArgs
-            const inputName = `${fieldConfig.name}Input`
-            const payloadName = `${fieldConfig.name}Payload`
+          factory({typeDef: t, args: factoryArgs}) {
+            const [fieldName, fieldConfig] = factoryArgs;
+            const inputName = `${fieldConfig.name}Input`;
+            const payloadName = `${fieldConfig.name}Payload`;
 
             if (fieldConfig.input && !b.hasType(inputName)) {
               b.addType(
@@ -54,8 +55,8 @@ export const mutationPayloadPlugin = (
                   name: inputName,
                   nonNullDefaults: fieldConfig.nonNullDefaults,
                   definition: fieldConfig.input,
-                })
-              )
+                }),
+              );
             }
 
             if (!b.hasType(payloadName)) {
@@ -64,30 +65,28 @@ export const mutationPayloadPlugin = (
                   name: payloadName,
                   nonNullDefaults: fieldConfig.nonNullDefaults,
                   definition: fieldConfig.payload,
-                })
-              )
+                }),
+              );
             }
 
             // Add the field to the type.
             t.field(fieldName, {
-              type: payloadName as any,
+              type: payloadName,
               description: fieldConfig.description,
               args: fieldConfig.input
                 ? {
-                    input: arg({
-                      type: inputName as any,
-                      required: true,
-                    }),
+                    input: nonNull(
+                      arg({
+                        type: inputName,
+                      }),
+                    ),
                   }
                 : {},
               resolve: fieldConfig.resolve,
-            })
+            });
           },
-        })
-      )
-
-      // TODO: Deprecate this syntax
-      return { types: [] }
+        }),
+      );
     },
-  })
-}
+  });
+};
