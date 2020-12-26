@@ -8,6 +8,9 @@
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
+  "files": [
+    "index.d.ts"
+  ],
   "devDependencies": {
     "graphql": "^15.4.0",
     "nexus": "^1.0.0",
