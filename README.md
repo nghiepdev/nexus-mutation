@@ -16,7 +16,7 @@ yarn add nexus-plugin-dynamic-mutation
 ### Input
 
 ```js
-import {extendType} from '@nexus/schema';
+import {extendType} from 'nexus';
 
 export const Mutation = extendType({
   type: 'Mutation',
