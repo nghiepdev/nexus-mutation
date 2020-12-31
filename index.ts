@@ -6,16 +6,43 @@ import {
   arg,
   nonNull,
 } from 'nexus';
+import {NonNullConfig} from 'nexus/dist/core';
 
-interface MutationDynamicPluginConfig {
+export interface MutationDynamicPluginConfig {
   /**
    * The method name in the objectType definition block
    *
    * @default 'dynamicMutation'
    */
-
   nexusFieldName?: string;
+
+  /**
+   * Configures the default "nonNullDefaults" settings
+   *
+   */
+  nonNullDefaults?: NonNullConfig;
 }
+
+export type MutationDynamicFieldConfig<
+  TypeName extends string = any,
+  FieldName extends string = any
+> = {
+  name: string;
+
+  description?: string;
+
+  /**
+   * Configures the default "nonNullDefaults" settings
+   *
+   */
+  nonNullDefaults?: NonNullConfig;
+
+  input: never;
+
+  payload: never;
+
+  resolve: never;
+} & NexusGenPluginFieldConfig<TypeName, FieldName>;
 
 export const mutationPayloadPlugin = (
   connectionPluginConfig?: MutationDynamicPluginConfig,
@@ -32,20 +59,24 @@ export const mutationPayloadPlugin = (
       b.addType(
         dynamicOutputMethod({
           name: nexusFieldName,
-          // TODO: Improve typeDefinition :(
+          // TODO: Improve Type definitions
           typeDefinition: `<FieldName extends string>(
               fieldName: FieldName,
               config: {
                 name: string,
                 description?: string,
                 nonNullDefaults?: core.NonNullConfig,
-                input?: (t: core.InputDefinitionBlock<any>) => void,
-                payload: (t: any) => void,
+                input?: (t: core.InputDefinitionBlock<TypeName>) => void,
+                payload: (t: core.OutputDefinitionBlock<TypeName>) => void,
                 resolve: core.FieldResolver<TypeName, any>
               }
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
-            const [fieldName, fieldConfig] = factoryArgs;
+            const [fieldName, fieldConfig] = factoryArgs as [
+              string,
+              MutationDynamicFieldConfig,
+            ];
+
             const inputName = `${fieldConfig.name}Input`;
             const payloadName = `${fieldConfig.name}Payload`;
 
@@ -53,7 +84,8 @@ export const mutationPayloadPlugin = (
               b.addType(
                 inputObjectType({
                   name: inputName,
-                  nonNullDefaults: fieldConfig.nonNullDefaults,
+                  nonNullDefaults:
+                    fieldConfig.nonNullDefaults ?? pluginConfig.nonNullDefaults,
                   definition: fieldConfig.input,
                 }),
               );
@@ -63,7 +95,8 @@ export const mutationPayloadPlugin = (
               b.addType(
                 objectType({
                   name: payloadName,
-                  nonNullDefaults: fieldConfig.nonNullDefaults,
+                  nonNullDefaults:
+                    fieldConfig.nonNullDefaults ?? pluginConfig.nonNullDefaults,
                   definition: fieldConfig.payload,
                 }),
               );

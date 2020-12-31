@@ -5,8 +5,7 @@
     "lib": ["ESNext"],
     "declaration": true,
     "outDir": ".",
-    "strict": true,
-    "removeComments": true
+    "strict": true
   },
   "exclude": ["index.d.ts"]
 }
