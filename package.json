@@ -1,6 +1,6 @@
 {
   "name": "nexus-plugin-dynamic-mutation",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "index.js",
   "types": "index.d.ts",
   "description": "Nexus plugin to ease create dynamic mutation.",
