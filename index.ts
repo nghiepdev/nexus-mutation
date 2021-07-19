@@ -45,7 +45,7 @@ type MutationDynamicFieldConfig<
 } & NexusGenPluginFieldConfig<TypeName, FieldName>;
 
 export const mutationPayloadPlugin = (
-  connectionPluginConfig?: MutationDynamicPluginConfig,
+  connectionPluginConfig?: MutationDynamicPluginConfig
 ) => {
   const pluginConfig: MutationDynamicPluginConfig = {
     ...connectionPluginConfig,
@@ -59,7 +59,6 @@ export const mutationPayloadPlugin = (
       b.addType(
         dynamicOutputMethod({
           name: nexusFieldName,
-          // TODO: Improve Type definitions
           typeDefinition: `<FieldName extends string>(
               fieldName: FieldName,
               config: {
@@ -68,13 +67,13 @@ export const mutationPayloadPlugin = (
                 nonNullDefaults?: core.NonNullConfig,
                 input?: (t: core.InputDefinitionBlock<TypeName>) => void,
                 payload: (t: core.OutputDefinitionBlock<TypeName>) => void,
-                resolve: core.FieldResolver<TypeName, any>
+                resolve: core.FieldResolver<TypeName, FieldName>
               }
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
               string,
-              MutationDynamicFieldConfig,
+              MutationDynamicFieldConfig
             ];
 
             const inputName = `${fieldConfig.name}Input`;
@@ -87,7 +86,7 @@ export const mutationPayloadPlugin = (
                   nonNullDefaults:
                     fieldConfig.nonNullDefaults ?? pluginConfig.nonNullDefaults,
                   definition: fieldConfig.input,
-                }),
+                })
               );
             }
 
@@ -98,7 +97,7 @@ export const mutationPayloadPlugin = (
                   nonNullDefaults:
                     fieldConfig.nonNullDefaults ?? pluginConfig.nonNullDefaults,
                   definition: fieldConfig.payload,
-                }),
+                })
               );
             }
 
@@ -111,14 +110,14 @@ export const mutationPayloadPlugin = (
                     input: nonNull(
                       arg({
                         type: inputName,
-                      }),
+                      })
                     ),
                   }
                 : {},
               resolve: fieldConfig.resolve,
             });
           },
-        }),
+        })
       );
     },
   });

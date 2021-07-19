@@ -1,7 +1,7 @@
 # nexus-plugin-dynamic-mutation
 
 [![NPM version](https://img.shields.io/npm/v/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
-[![NPM yearly download](https://img.shields.io/npm/dy/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
+[![NPM monthly download](https://img.shields.io/npm/dm/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
 
 > Nexus plugin to ease create dynamic mutation.
 
@@ -23,7 +23,7 @@ export const Mutation = extendType({
   definition(t) {
     t.dynamicMutation('createUser', {
       name: 'CreateUser',
-      description: 'Create new a user',
+      description: 'Create new a User',
       nonNullDefaults: {
         input: true,
         output: false,
