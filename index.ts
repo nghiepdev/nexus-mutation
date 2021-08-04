@@ -1,12 +1,19 @@
 import {
-  plugin,
-  objectType,
-  inputObjectType,
-  dynamicOutputMethod,
   arg,
+  dynamicOutputMethod,
+  inputObjectType,
   nonNull,
+  objectType,
+  plugin,
 } from 'nexus';
-import {NonNullConfig} from 'nexus/dist/core';
+import {
+  FieldResolver,
+  InputDefinitionBlock,
+  NexusNonNullDef,
+  NexusOutputFieldConfig,
+  NonNullConfig,
+  OutputDefinitionBlock,
+} from 'nexus/dist/core';
 
 interface MutationDynamicPluginConfig {
   /**
@@ -37,11 +44,15 @@ type MutationDynamicFieldConfig<
    */
   nonNullDefaults?: NonNullConfig;
 
-  input: never;
+  input?: (
+    t: InputDefinitionBlock<TypeName>
+  ) => void | NexusNonNullDef<TypeName>;
 
-  payload: never;
+  payload: (
+    t: OutputDefinitionBlock<TypeName>
+  ) => void | NexusOutputFieldConfig<TypeName, FieldName>['type'];
 
-  resolve: never;
+  resolve: FieldResolver<TypeName, FieldName>;
 } & NexusGenPluginFieldConfig<TypeName, FieldName>;
 
 export const mutationPayloadPlugin = (
@@ -65,8 +76,8 @@ export const mutationPayloadPlugin = (
                 name: string,
                 description?: string,
                 nonNullDefaults?: core.NonNullConfig,
-                input?: (t: core.InputDefinitionBlock<TypeName>) => void,
-                payload: (t: core.OutputDefinitionBlock<TypeName>) => void,
+                input?: core.NexusNonNullDef<TypeName> | (t: core.InputDefinitionBlock<TypeName>) => void,
+                payload: core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | (t: core.OutputDefinitionBlock<TypeName>) => void,
                 resolve: core.FieldResolver<TypeName, FieldName>
               }
             ): void`,
@@ -79,7 +90,10 @@ export const mutationPayloadPlugin = (
             const inputName = `${fieldConfig.name}Input`;
             const payloadName = `${fieldConfig.name}Payload`;
 
-            if (fieldConfig.input && !b.hasType(inputName)) {
+            if (
+              typeof fieldConfig.input === 'function' &&
+              !b.hasType(inputName)
+            ) {
               b.addType(
                 inputObjectType({
                   name: inputName,
@@ -90,7 +104,10 @@ export const mutationPayloadPlugin = (
               );
             }
 
-            if (!b.hasType(payloadName)) {
+            if (
+              typeof fieldConfig.payload === 'function' &&
+              !b.hasType(payloadName)
+            ) {
               b.addType(
                 objectType({
                   name: payloadName,
@@ -103,17 +120,23 @@ export const mutationPayloadPlugin = (
 
             // Add the field to the type.
             t.field(fieldName, {
-              type: payloadName,
+              type:
+                typeof fieldConfig.payload === 'function'
+                  ? payloadName
+                  : fieldConfig.payload,
               description: fieldConfig.description,
-              args: fieldConfig.input
-                ? {
-                    input: nonNull(
-                      arg({
-                        type: inputName,
-                      })
-                    ),
-                  }
-                : {},
+              args:
+                fieldConfig.input instanceof NexusNonNullDef
+                  ? {input: fieldConfig.input.ofNexusType}
+                  : typeof fieldConfig.input === 'function'
+                  ? {
+                      input: nonNull(
+                        arg({
+                          type: inputName,
+                        })
+                      ),
+                    }
+                  : {},
               resolve: fieldConfig.resolve,
             });
           },
