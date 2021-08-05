@@ -3,7 +3,7 @@
 [![NPM version](https://img.shields.io/npm/v/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
 [![NPM monthly download](https://img.shields.io/npm/dm/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
 
-> Nexus plugin to ease create dynamic mutation.
+> A plugin for Nexus to automatically create object type
 
 ## Installation
 

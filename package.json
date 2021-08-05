@@ -3,7 +3,7 @@
   "version": "0.3.3",
   "main": "index.js",
   "types": "index.d.ts",
-  "description": "Nexus plugin to ease create dynamic mutation.",
+  "description": "A plugin for Nexus to automatically create object type",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
