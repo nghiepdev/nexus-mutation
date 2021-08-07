@@ -4,7 +4,7 @@ import {
   NexusNonNullDef,
   NexusOutputFieldConfig,
   NonNullConfig,
-  OutputDefinitionBlock,
+  ObjectDefinitionBlock,
 } from 'nexus/dist/core';
 
 export interface MutationDynamicPluginConfig {
@@ -38,9 +38,14 @@ export type MutationDynamicFieldConfig<
 
   input?: (t: InputDefinitionBlock<TypeName>) => void | NexusNonNullDef<any>;
 
-  payload: (
-    t: OutputDefinitionBlock<TypeName>
-  ) => void | NexusOutputFieldConfig<TypeName, FieldName>['type'];
+  payload:
+    | NexusOutputFieldConfig<TypeName, FieldName>['type']
+    | ((t: ObjectDefinitionBlock<TypeName>) => void)
+    | Record<
+        string,
+        | NexusOutputFieldConfig<TypeName, FieldName>['type']
+        | ((t: ObjectDefinitionBlock<TypeName>) => void)
+      >;
 
   resolve: FieldResolver<TypeName, FieldName>;
 } & NexusGenPluginFieldConfig<TypeName, FieldName>;
