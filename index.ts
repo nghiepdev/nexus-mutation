@@ -44,9 +44,7 @@ type MutationDynamicFieldConfig<
    */
   nonNullDefaults?: NonNullConfig;
 
-  input?: (
-    t: InputDefinitionBlock<TypeName>
-  ) => void | NexusNonNullDef<TypeName>;
+  input?: (t: InputDefinitionBlock<TypeName>) => void | NexusNonNullDef<any>;
 
   payload: (
     t: OutputDefinitionBlock<TypeName>
@@ -76,8 +74,8 @@ export const mutationPayloadPlugin = (
                 name: string,
                 description?: string,
                 nonNullDefaults?: core.NonNullConfig,
-                input?: core.NexusNonNullDef<TypeName> | (t: core.InputDefinitionBlock<TypeName>) => void,
-                payload: core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | (t: core.OutputDefinitionBlock<TypeName>) => void,
+                input?: core.NexusNonNullDef<any> | ((t: core.InputDefinitionBlock<TypeName>) => void),
+                payload: core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.OutputDefinitionBlock<TypeName>) => void),
                 resolve: core.FieldResolver<TypeName, FieldName>
               }
             ): void`,
