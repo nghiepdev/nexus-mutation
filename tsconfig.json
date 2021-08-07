@@ -4,8 +4,8 @@
     "module": "commonjs",
     "lib": ["esnext"],
     "declaration": true,
-    "outDir": ".",
+    "outDir": "dist",
     "strict": true
   },
-  "exclude": ["index.d.ts"]
+  "exclude": ["dist"]
 }
