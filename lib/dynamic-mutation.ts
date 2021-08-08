@@ -187,7 +187,7 @@ export const mutationPayloadPlugin = (
               description: fieldConfig.description,
               args:
                 fieldConfig.input instanceof NexusNonNullDef
-                  ? {input: fieldConfig.input.ofNexusType}
+                  ? {input: nonNull(fieldConfig.input.ofNexusType)}
                   : typeof fieldConfig.input === 'function'
                   ? {
                       input: nonNull(
