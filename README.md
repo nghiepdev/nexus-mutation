@@ -79,6 +79,8 @@ type LoginPayload {
 
 Handling GraphQL errors like a champ with interfaces and unions
 
+> Plugin will select the first member object type to fallback resolveType
+
 #### Input
 
 ```js
@@ -105,7 +107,7 @@ export const Mutation = extendType({
         t.string('fullname');
       },
       payload: {
-        result: 'User',
+        result: 'User', // First type to fallback resolveType
         validationError(t) {
           t.implements('Error');
           t.nullable.string('username');
@@ -123,7 +125,7 @@ export const Mutation = extendType({
           return {
             message: 'Validation input failed',
             username: 'Username has already been taken',
-            __typename: 'RegisterValidationError',
+            __typename: 'RegisterValidationError', // Required
           };
         }
 
@@ -131,7 +133,7 @@ export const Mutation = extendType({
           return {
             message: 'Blocked',
             description: 'Registration not available in your region',
-            __typename: 'RegisterCountryBlockedError',
+            __typename: 'RegisterCountryBlockedError', // Required
           };
         }
 
@@ -140,6 +142,7 @@ export const Mutation = extendType({
           body: JSON.stringify(input),
         });
 
+        // Fallback resolveType
         return user;
       },
     });

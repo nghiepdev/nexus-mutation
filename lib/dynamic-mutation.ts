@@ -160,7 +160,7 @@ export const mutationPayloadPlugin = (
                           t.members(...allMemberUnion);
                         },
                         resolveType(root) {
-                          return root.__typename;
+                          return root.__typename ?? allMemberUnion[0];
                         },
                       })
                     );
