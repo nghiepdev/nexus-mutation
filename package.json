@@ -1,6 +1,6 @@
 {
-  "name": "nexus-plugin-dynamic-mutation",
-  "version": "0.4.2",
+  "name": "nexus-mutation",
+  "version": "0.4.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "A plugin for Nexus to automatically create object type",
@@ -21,12 +21,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/nghiepit/nexus-plugin-dynamic-mutation.git"
+    "url": "git://github.com/nghiepit/nexus-mutation.git"
   },
   "bugs": {
-    "url": "https://github.com/nghiepit/nexus-plugin-dynamic-mutation/issues"
+    "url": "https://github.com/nghiepit/nexus-mutation/issues"
   },
-  "homepage": "https://github.com/nghiepit/nexus-plugin-dynamic-mutation",
+  "homepage": "https://github.com/nghiepit/nexus-mutation",
   "author": "Nghiep <me@nghiepit.dev>",
   "license": "MIT"
 }

@@ -1,14 +1,14 @@
-# nexus-plugin-dynamic-mutation
+# nexus-mutation
 
-[![NPM version](https://img.shields.io/npm/v/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
-[![NPM monthly download](https://img.shields.io/npm/dm/nexus-plugin-dynamic-mutation.svg)](https://www.npmjs.com/package/nexus-plugin-dynamic-mutation)
+[![NPM version](https://img.shields.io/npm/v/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
+[![NPM monthly download](https://img.shields.io/npm/dm/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
 
 > A plugin for Nexus to automatically create object type
 
 ## Installation
 
 ```bash
-yarn add nexus-plugin-dynamic-mutation
+yarn add nexus-mutation
 ```
 
 ## Usage

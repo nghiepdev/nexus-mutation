@@ -1,1 +1,1 @@
-export * from './lib/dynamic-mutation';
+export * from './lib/mutation';

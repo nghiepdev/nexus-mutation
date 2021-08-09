@@ -9,18 +9,18 @@ import {
 } from 'nexus';
 import {NexusNonNullDef} from 'nexus/dist/core';
 
-import {MutationDynamicFieldConfig, MutationDynamicPluginConfig} from './types';
+import {MutationPluginFieldConfig, MutationPluginConfig} from './types';
 import {capitalizeFirstLetter, getFirstValueOfObject} from './utils';
 
-export const mutationPayloadPlugin = (
-  connectionPluginConfig?: MutationDynamicPluginConfig
+export const dynamicMutation = (
+  connectionPluginConfig?: MutationPluginConfig
 ) => {
-  const pluginConfig: MutationDynamicPluginConfig = {
+  const pluginConfig: MutationPluginConfig = {
     ...connectionPluginConfig,
   };
 
   return plugin({
-    name: 'Dynamic Mutation Plugin',
+    name: 'Nexus Mutation Plugin',
     onInstall(b) {
       const {nexusFieldName = 'dynamicMutation'} = pluginConfig;
 
@@ -41,7 +41,7 @@ export const mutationPayloadPlugin = (
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
               string,
-              MutationDynamicFieldConfig
+              MutationPluginFieldConfig
             ];
 
             const inputName = `${fieldConfig.name}Input`;
@@ -72,7 +72,7 @@ export const mutationPayloadPlugin = (
             if (typeof fieldConfig.payload === 'string') {
               if (!b.hasType(fieldConfig.payload)) {
                 throw new Error(
-                  `Nexus Dynamic Plugin: ${payloadName} must have a type`
+                  `Nexus Mutation Plugin: ${payloadName} must have a type`
                 );
               }
             } else if (typeof fieldConfig.payload === 'function') {
@@ -97,7 +97,7 @@ export const mutationPayloadPlugin = (
 
               if (totalPayload === 0) {
                 throw new Error(
-                  `Nexus Dynamic Plugin: ${payloadName} must have at least one type`
+                  `Nexus Mutation Plugin: ${payloadName} must have at least one type`
                 );
               } else if (totalPayload > 1) {
                 for (const [payloadUnionKey, payloadUnionDef] of Object.entries(
@@ -168,7 +168,7 @@ export const mutationPayloadPlugin = (
               }
             } else {
               throw new Error(
-                `Nexus Dynamic Plugin: ${payloadName} must be an object, string or function.`
+                `Nexus Mutation Plugin: ${payloadName} must be an object, string or function.`
               );
             }
 

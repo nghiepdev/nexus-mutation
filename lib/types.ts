@@ -7,7 +7,7 @@ import {
   ObjectDefinitionBlock,
 } from 'nexus/dist/core';
 
-export interface MutationDynamicPluginConfig {
+export interface MutationPluginConfig {
   /**
    * The method name in the objectType definition block
    *
@@ -22,7 +22,7 @@ export interface MutationDynamicPluginConfig {
   nonNullDefaults?: NonNullConfig;
 }
 
-export type MutationDynamicFieldConfig<
+export type MutationPluginFieldConfig<
   TypeName extends string = any,
   FieldName extends string = any
 > = {
