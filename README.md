@@ -142,7 +142,7 @@ export const Mutation = extendType({
           body: JSON.stringify(input),
         });
 
-        // Fallback resolveType
+        // Fallback
         return user;
       },
     });
@@ -208,4 +208,4 @@ mutation Register {
 
 ## License
 
-MIT © [Nghiep](mailto:me@nghiepit.dev)
+MIT
