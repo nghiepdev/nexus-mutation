@@ -3,7 +3,7 @@
 [![NPM version](https://img.shields.io/npm/v/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
 [![NPM monthly download](https://img.shields.io/npm/dm/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
 
-> A plugin for Nexus to automatically create object type
+> A plugin for Nexus that automatically creates an object type.
 
 ## Installation
 
@@ -12,6 +12,16 @@ yarn add nexus-mutation
 ```
 
 ## Usage
+
+```ts
+import {makeSchema} from 'nexus';
+import {dynamicMutation} from 'nexus-mutation';
+
+// ...
+makeSchema({
+  plugins: [dynamicMutation()],
+});
+```
 
 ### Basic
 
@@ -107,7 +117,7 @@ export const Mutation = extendType({
         t.string('fullname');
       },
       payload: {
-        result: 'User', // First type to fallback resolveType
+        result: 'User', // The first type to fallback resolveType
         validationError(t) {
           t.implements('Error');
           t.nullable.string('username');

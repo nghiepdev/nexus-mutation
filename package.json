@@ -3,7 +3,7 @@
   "version": "0.4.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "description": "A plugin for Nexus to automatically create object type",
+  "description": "A plugin for Nexus that automatically creates an object type.",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
@@ -21,12 +21,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/nghiepit/nexus-mutation.git"
+    "url": "git://github.com/nghiepdev/nexus-mutation.git"
   },
   "bugs": {
-    "url": "https://github.com/nghiepit/nexus-mutation/issues"
+    "url": "https://github.com/nghiepdev/nexus-mutation/issues"
   },
-  "homepage": "https://github.com/nghiepit/nexus-mutation",
-  "author": "Nghiep <me@nghiepit.dev>",
+  "homepage": "https://github.com/nghiepdev/nexus-mutation",
+  "author": "Nghiep <me@nghiep.dev>",
   "license": "MIT"
 }

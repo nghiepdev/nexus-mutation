@@ -7,5 +7,6 @@
     "outDir": "dist",
     "strict": true
   },
-  "exclude": ["dist"]
+  "include": ["lib"],
+  "exclude": ["node_modules", "dist"]
 }
