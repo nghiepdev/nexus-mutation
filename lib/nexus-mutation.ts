@@ -7,7 +7,13 @@ import {
   plugin,
   unionType,
 } from 'nexus';
-import {NexusNonNullDef} from 'nexus/dist/core';
+import {
+  NexusListDef,
+  NexusNonNullDef,
+  NexusNullDef,
+  list,
+  nullable,
+} from 'nexus/dist/core';
 
 import {MutationPluginFieldConfig, MutationPluginConfig} from './types';
 import {capitalizeFirstLetter, getFirstValueOfObject} from './utils';
@@ -33,7 +39,7 @@ export const dynamicMutation = (
                 name: string,
                 description?: string,
                 nonNullDefaults?: core.NonNullConfig,
-                input?: core.NexusNonNullDef<any> | ((t: core.InputDefinitionBlock<TypeName>) => void),
+                input?: core.AllNexusArgsDefs | ((t: core.InputDefinitionBlock<TypeName>) => void),
                 payload: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | ((t: core.ObjectDefinitionBlock<TypeName>) => void) | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.ObjectDefinitionBlock<TypeName>) => void)>,
                 resolve: core.FieldResolver<TypeName, FieldName>
               }
@@ -99,7 +105,9 @@ export const dynamicMutation = (
                 throw new Error(
                   `Nexus Mutation Plugin: ${payloadName} must have at least one type`
                 );
-              } else if (totalPayload > 1) {
+              }
+
+              if (totalPayload > 1) {
                 for (const [payloadUnionKey, payloadUnionDef] of Object.entries(
                   fieldConfig.payload
                 )) {
@@ -185,18 +193,37 @@ export const dynamicMutation = (
                   ? payloadName
                   : getFirstValueOfObject<any>(fieldConfig.payload as any),
               description: fieldConfig.description,
-              args:
-                fieldConfig.input instanceof NexusNonNullDef
-                  ? {input: nonNull(fieldConfig.input.ofNexusType)}
-                  : typeof fieldConfig.input === 'function'
-                  ? {
-                      input: nonNull(
-                        arg({
-                          type: inputName,
-                        })
-                      ),
-                    }
-                  : {},
+              args: (input => {
+                if (typeof input === 'string') {
+                  return {input};
+                }
+
+                if (typeof input === 'function') {
+                  return {
+                    input: arg({
+                      type: inputName,
+                    }),
+                  };
+                }
+
+                if (input instanceof NexusNullDef) {
+                  return {
+                    input: nullable(input.ofNexusType),
+                  };
+                }
+
+                if (input instanceof NexusNonNullDef) {
+                  return {
+                    input: nonNull(input.ofNexusType),
+                  };
+                }
+
+                if (input instanceof NexusListDef) {
+                  return {
+                    input: list(input.ofNexusType),
+                  };
+                }
+              })(fieldConfig.input),
               resolve: fieldConfig.resolve,
             });
           },

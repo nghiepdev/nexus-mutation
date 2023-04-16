@@ -1,7 +1,7 @@
 import {
+  AllNexusArgsDefs,
   FieldResolver,
   InputDefinitionBlock,
-  NexusNonNullDef,
   NexusOutputFieldConfig,
   NonNullConfig,
   ObjectDefinitionBlock,
@@ -36,7 +36,7 @@ export type MutationPluginFieldConfig<
    */
   nonNullDefaults?: NonNullConfig;
 
-  input?: (t: InputDefinitionBlock<TypeName>) => void | NexusNonNullDef<any>;
+  input?: AllNexusArgsDefs | ((t: InputDefinitionBlock<TypeName>) => void);
 
   payload:
     | NexusOutputFieldConfig<TypeName, FieldName>['type']
