@@ -4,18 +4,19 @@
 [![NPM monthly download](https://img.shields.io/npm/dm/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
 
 > A plugin for Nexus that automatically creates an object type.
+> Sine 0.5 `dynamicQuery` support.
 
 ## Installation
 
 ```bash
-yarn add nexus-mutation
+$ yarn add nexus-mutation
 ```
 
 ## Usage
 
 ```ts
 import {makeSchema} from 'nexus';
-import {dynamicMutation} from 'nexus-mutation';
+import {dynamicQuery, dynamicMutation} from 'nexus-mutation';
 
 // ...
 makeSchema({
@@ -188,11 +189,7 @@ union RegisterPayload =
     RegisterCountryBlockedError
   | RegisterValidationError
   | User
-```
 
-#### Result
-
-```gql
 mutation Register {
   register(
     input: {username: "johndoe", password: "123456", fullname: "John Doe"}

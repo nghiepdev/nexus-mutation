@@ -18,18 +18,12 @@ import {
 import {MutationPluginFieldConfig, MutationPluginConfig} from './types';
 import {capitalizeFirstLetter, getFirstValueOfObject} from './utils';
 
-export const dynamicMutation = (
-  connectionPluginConfig?: MutationPluginConfig
-) => {
-  const pluginConfig: MutationPluginConfig = {
-    ...connectionPluginConfig,
-  };
+export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
+  const nexusFieldName = pluginConfig?.nexusFieldName ?? 'dynamicMutation';
 
   return plugin({
     name: 'Nexus Mutation Plugin',
     onInstall(b) {
-      const {nexusFieldName = 'dynamicMutation'} = pluginConfig;
-
       b.addType(
         dynamicOutputMethod({
           name: nexusFieldName,
@@ -49,6 +43,8 @@ export const dynamicMutation = (
               string,
               MutationPluginFieldConfig
             ];
+            const nonNullDefaults =
+              fieldConfig?.nonNullDefaults ?? pluginConfig?.nonNullDefaults;
 
             const inputName = `${fieldConfig.name}Input`;
             const payloadName = `${fieldConfig.name}Payload`;
@@ -64,8 +60,7 @@ export const dynamicMutation = (
               b.addType(
                 inputObjectType({
                   name: inputName,
-                  nonNullDefaults:
-                    fieldConfig.nonNullDefaults ?? pluginConfig.nonNullDefaults,
+                  nonNullDefaults,
                   definition: fieldConfig.input,
                 })
               );
@@ -86,9 +81,7 @@ export const dynamicMutation = (
                 b.addType(
                   objectType({
                     name: payloadName,
-                    nonNullDefaults:
-                      fieldConfig.nonNullDefaults ??
-                      pluginConfig.nonNullDefaults,
+                    nonNullDefaults,
                     definition: fieldConfig.payload,
                   })
                 );
@@ -121,9 +114,7 @@ export const dynamicMutation = (
                       b.addType(
                         objectType({
                           name: memberName,
-                          nonNullDefaults:
-                            fieldConfig.nonNullDefaults ??
-                            pluginConfig.nonNullDefaults,
+                          nonNullDefaults,
                           definition: payloadUnionDef,
                         })
                       );
@@ -150,9 +141,7 @@ export const dynamicMutation = (
                         b.addType(
                           objectType({
                             name: payloadName,
-                            nonNullDefaults:
-                              fieldConfig.nonNullDefaults ??
-                              pluginConfig.nonNullDefaults,
+                            nonNullDefaults,
                             definition: payloadFn,
                           })
                         );
@@ -200,9 +189,11 @@ export const dynamicMutation = (
 
                 if (typeof input === 'function') {
                   return {
-                    input: arg({
-                      type: inputName,
-                    }),
+                    input: nonNull(
+                      arg({
+                        type: inputName,
+                      })
+                    ),
                   };
                 }
 
