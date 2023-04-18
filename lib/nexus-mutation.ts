@@ -86,6 +86,12 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
                   })
                 );
               }
+            } else if (
+              fieldConfig.payload instanceof NexusNullDef ||
+              fieldConfig.payload instanceof NexusNonNullDef ||
+              fieldConfig.payload instanceof NexusListDef
+            ) {
+              // Nothing
             } else if (typeof fieldConfig.payload === 'object') {
               /**
                * And Member Object Types
@@ -178,6 +184,12 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
                 typeof fieldConfig.payload === 'string' &&
                 b.hasType(fieldConfig.payload)
                   ? fieldConfig.payload
+                  : fieldConfig.payload instanceof NexusNullDef
+                  ? nullable(fieldConfig.payload.ofNexusType)
+                  : fieldConfig.payload instanceof NexusNonNullDef
+                  ? nonNull(fieldConfig.payload.ofNexusType)
+                  : fieldConfig.payload instanceof NexusListDef
+                  ? list(fieldConfig.payload.ofNexusType)
                   : b.hasType(payloadName)
                   ? payloadName
                   : getFirstValueOfObject<any>(fieldConfig.payload as any),

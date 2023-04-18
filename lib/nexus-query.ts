@@ -47,7 +47,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
               string,
-              QueryPluginFieldConfig,
+              QueryPluginFieldConfig
             ];
 
             const nonNullDefaults =
@@ -61,8 +61,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
              * Add Sort Object
              *
              */
-
-            if (!b.hasType(sortTypeName)) {
+            if (fieldConfig.sortFields && !b.hasType(sortTypeName)) {
               b.addType(
                 enumType({
                   name: sortTypeName,
@@ -70,7 +69,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                     ASC: sortTypeValues[0],
                     DESC: sortTypeValues[1],
                   },
-                }),
+                })
               );
             }
 
@@ -87,7 +86,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                   name: filterInputName,
                   nonNullDefaults: nonNullDefaults,
                   definition: fieldConfig.filter,
-                }),
+                })
               );
             }
 
@@ -112,7 +111,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                       });
                     });
                   },
-                }),
+                })
               );
             }
 
@@ -123,7 +122,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
             if (typeof fieldConfig.result === 'string') {
               if (!b.hasType(fieldConfig.result)) {
                 throw new Error(
-                  `Nexus Query Plugin: ${resultName} must have a type`,
+                  `Nexus Query Plugin: ${resultName} must have a type`
                 );
               }
             } else if (typeof fieldConfig.result === 'function') {
@@ -133,9 +132,15 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                     name: resultName,
                     nonNullDefaults,
                     definition: fieldConfig.result,
-                  }),
+                  })
                 );
               }
+            } else if (
+              fieldConfig.result instanceof NexusNullDef ||
+              fieldConfig.result instanceof NexusNonNullDef ||
+              fieldConfig.result instanceof NexusListDef
+            ) {
+              // Nothing
             } else if (typeof fieldConfig.result === 'object') {
               /**
                * And Member Object Types
@@ -146,13 +151,13 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
 
               if (totalResult === 0) {
                 throw new Error(
-                  `Nexus Query Plugin: ${resultName} must have at least one type`,
+                  `Nexus Query Plugin: ${resultName} must have at least one type`
                 );
               }
 
               if (totalResult > 1) {
                 for (const [resultUnionKey, resultUnionDef] of Object.entries(
-                  fieldConfig.result,
+                  fieldConfig.result
                 )) {
                   const memberName = `${
                     fieldConfig.name
@@ -166,7 +171,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                           name: memberName,
                           nonNullDefaults,
                           definition: resultUnionDef,
-                        }),
+                        })
                       );
                     }
                   } else {
@@ -185,7 +190,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                   case 1:
                     {
                       const payloadFn = getFirstValueOfObject<any>(
-                        fieldConfig.result,
+                        fieldConfig.result
                       );
                       if (typeof payloadFn === 'function') {
                         b.addType(
@@ -193,7 +198,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                             name: resultName,
                             nonNullDefaults,
                             definition: payloadFn,
-                          }),
+                          })
                         );
                       }
                     }
@@ -209,13 +214,13 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                         resolveType(root) {
                           return root.__typename ?? allMemberUnion[0];
                         },
-                      }),
+                      })
                     );
                 }
               }
             } else {
               throw new Error(
-                `Nexus Query Plugin: ${resultName} must be an object, string or function.`,
+                `Nexus Query Plugin: ${resultName} must be an object, string or function.`
               );
             }
 
@@ -228,6 +233,12 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                 typeof fieldConfig.result === 'string' &&
                 b.hasType(fieldConfig.result)
                   ? fieldConfig.result
+                  : fieldConfig.result instanceof NexusNullDef
+                  ? nullable(fieldConfig.result.ofNexusType)
+                  : fieldConfig.result instanceof NexusNonNullDef
+                  ? nonNull(fieldConfig.result.ofNexusType)
+                  : fieldConfig.result instanceof NexusListDef
+                  ? list(fieldConfig.result.ofNexusType)
                   : b.hasType(resultName)
                   ? resultName
                   : getFirstValueOfObject<any>(fieldConfig.result as any),
@@ -274,7 +285,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
               resolve: fieldConfig.resolve,
             });
           },
-        }),
+        })
       );
     },
   });
