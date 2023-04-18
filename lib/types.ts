@@ -64,6 +64,13 @@ export type QueryPluginFieldConfig<
         | ((t: ObjectDefinitionBlock<TypeName>) => void)
       >;
 
+  resultMeta?: {
+    list?: true | 'list';
+    pagination?:
+      | NexusOutputFieldConfig<TypeName, FieldName>['type']
+      | Record<string, NexusOutputFieldConfig<TypeName, FieldName>['type']>;
+  };
+
   resolve: FieldResolver<TypeName, FieldName>;
 } & NexusGenPluginFieldConfig<TypeName, FieldName>;
 

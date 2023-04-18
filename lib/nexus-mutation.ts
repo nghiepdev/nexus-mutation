@@ -67,7 +67,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
             }
 
             /**
-             * Add Single Payload Object
+             * Add Payload Object
              *
              */
             if (typeof fieldConfig.payload === 'string') {
@@ -132,8 +132,8 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
               }
 
               /**
-               * Defined Single Payload Object
-               * or PayloadUnion
+               * Add Payload Object
+               *
                */
               if (!b.hasType(payloadName)) {
                 switch (allMemberUnion.length) {

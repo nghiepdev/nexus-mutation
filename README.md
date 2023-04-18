@@ -189,7 +189,9 @@ union RegisterPayload =
     RegisterCountryBlockedError
   | RegisterValidationError
   | User
+```
 
+```graphql
 mutation Register {
   register(
     input: {username: "johndoe", password: "123456", fullname: "John Doe"}

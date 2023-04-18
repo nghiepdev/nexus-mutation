@@ -41,6 +41,10 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                 filter?: core.AllNexusArgsDefs | ((t: core.InputDefinitionBlock<TypeName>) => void),
                 sortFields?: string[],
                 result: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | ((t: core.ObjectDefinitionBlock<TypeName>) => void) | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.ObjectDefinitionBlock<TypeName>) => void)>,
+                resultMeta?: {
+                  list?: true | "list",
+                  pagination?: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"]>
+                },
                 resolve: core.FieldResolver<TypeName, FieldName>
               }
             ): void`,
@@ -53,9 +57,18 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
             const nonNullDefaults =
               fieldConfig.nonNullDefaults ?? pluginConfig?.nonNullDefaults;
 
+            const isResultMetaValid =
+              !!fieldConfig.resultMeta &&
+              (!!fieldConfig.resultMeta.list ||
+                (typeof fieldConfig.resultMeta.pagination === 'string' &&
+                  b.hasType(fieldConfig.resultMeta.pagination)));
+
             const filterInputName = `${fieldConfig.name}FilterInput`;
             const sortInputName = `${fieldConfig.name}SortInput`;
             const resultName = `${fieldConfig.name}Result`;
+            const dataName = isResultMetaValid
+              ? `${fieldConfig.name}Data`
+              : resultName;
 
             /**
              * Add Sort Object
@@ -116,20 +129,20 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
             }
 
             /**
-             * Add Single Result Object
+             * Add Data Object
              *
              */
             if (typeof fieldConfig.result === 'string') {
               if (!b.hasType(fieldConfig.result)) {
                 throw new Error(
-                  `Nexus Query Plugin: ${resultName} must have a type`
+                  `Nexus Query Plugin: ${dataName} must have a type`
                 );
               }
             } else if (typeof fieldConfig.result === 'function') {
-              if (!b.hasType(resultName)) {
+              if (!b.hasType(dataName)) {
                 b.addType(
                   objectType({
-                    name: resultName,
+                    name: dataName,
                     nonNullDefaults,
                     definition: fieldConfig.result,
                   })
@@ -151,7 +164,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
 
               if (totalResult === 0) {
                 throw new Error(
-                  `Nexus Query Plugin: ${resultName} must have at least one type`
+                  `Nexus Query Plugin: ${dataName} must have at least one type`
                 );
               }
 
@@ -181,10 +194,10 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
               }
 
               /**
-               * Defined Single Result Object
-               * or ResultUnion
+               * Add Data Object
+               *
                */
-              if (!b.hasType(resultName)) {
+              if (!b.hasType(dataName)) {
                 switch (allMemberUnion.length) {
                   case 0:
                   case 1:
@@ -195,7 +208,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                       if (typeof payloadFn === 'function') {
                         b.addType(
                           objectType({
-                            name: resultName,
+                            name: dataName,
                             nonNullDefaults,
                             definition: payloadFn,
                           })
@@ -207,7 +220,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                   default:
                     b.addType(
                       unionType({
-                        name: resultName,
+                        name: dataName,
                         definition(t) {
                           t.members(...(allMemberUnion as UnionMembers));
                         },
@@ -220,7 +233,60 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
               }
             } else {
               throw new Error(
-                `Nexus Query Plugin: ${resultName} must be an object, string or function.`
+                `Nexus Query Plugin: ${dataName} must be an object, string or function.`
+              );
+            }
+
+            /**
+             * Add Result Object
+             *
+             */
+            if (isResultMetaValid && !b.hasType(resultName)) {
+              b.addType(
+                objectType({
+                  name: resultName,
+                  nonNullDefaults,
+                  definition(t) {
+                    const itemTypeName =
+                      typeof fieldConfig.result === 'string' &&
+                      b.hasType(fieldConfig.result)
+                        ? fieldConfig.result
+                        : fieldConfig.result instanceof NexusNullDef
+                        ? nullable(fieldConfig.result.ofNexusType)
+                        : fieldConfig.result instanceof NexusNonNullDef
+                        ? nonNull(fieldConfig.result.ofNexusType)
+                        : fieldConfig.result instanceof NexusListDef
+                        ? list(fieldConfig.result.ofNexusType)
+                        : b.hasType(dataName)
+                        ? dataName
+                        : getFirstValueOfObject<string>(
+                            fieldConfig.result as any
+                          );
+
+                    if (fieldConfig?.resultMeta?.list === 'list') {
+                      t.nonNull.list.nonNull.field('items', {
+                        type: itemTypeName,
+                      });
+                    } else if (fieldConfig?.resultMeta?.list === true) {
+                      t.nonNull.list.field('items', {
+                        type: itemTypeName,
+                      });
+                    } else {
+                      t.field('data', {
+                        type: itemTypeName,
+                      });
+                    }
+
+                    if (
+                      typeof fieldConfig?.resultMeta?.pagination === 'string' &&
+                      b.hasType(fieldConfig?.resultMeta?.pagination)
+                    ) {
+                      t.nonNull.field('pagination', {
+                        type: fieldConfig.resultMeta.pagination,
+                      });
+                    }
+                  },
+                })
               );
             }
 
@@ -230,18 +296,9 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
              */
             t.field(fieldName, {
               type:
-                typeof fieldConfig.result === 'string' &&
-                b.hasType(fieldConfig.result)
-                  ? fieldConfig.result
-                  : fieldConfig.result instanceof NexusNullDef
-                  ? nullable(fieldConfig.result.ofNexusType)
-                  : fieldConfig.result instanceof NexusNonNullDef
-                  ? nonNull(fieldConfig.result.ofNexusType)
-                  : fieldConfig.result instanceof NexusListDef
-                  ? list(fieldConfig.result.ofNexusType)
-                  : b.hasType(resultName)
+                isResultMetaValid && b.hasType(resultName)
                   ? resultName
-                  : getFirstValueOfObject<any>(fieldConfig.result as any),
+                  : dataName,
               description: fieldConfig.description,
               args: {
                 ...fieldConfig.args,
