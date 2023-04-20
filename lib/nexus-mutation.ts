@@ -16,7 +16,7 @@ import {
 } from 'nexus/dist/core';
 
 import {MutationPluginFieldConfig, MutationPluginConfig} from './types';
-import {capitalizeFirstLetter, getFirstValueOfObject} from './utils';
+import {omit, capitalizeFirstLetter, getFirstValueOfObject} from './utils';
 
 export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
   const nexusFieldName = pluginConfig?.nexusFieldName ?? 'dynamicMutation';
@@ -36,7 +36,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
                 input?: core.AllNexusArgsDefs | ((t: core.InputDefinitionBlock<TypeName>) => void),
                 payload: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | ((t: core.ObjectDefinitionBlock<TypeName>) => void) | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.ObjectDefinitionBlock<TypeName>) => void)>,
                 resolve: core.FieldResolver<TypeName, FieldName>
-              }
+              } & NexusGenPluginFieldConfig<TypeName, FieldName>
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
@@ -48,6 +48,15 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
 
             const inputName = `${fieldConfig.name}Input`;
             const payloadName = `${fieldConfig.name}Payload`;
+
+            const otherPluginFields = omit(fieldConfig, [
+              'description',
+              'input',
+              'name',
+              'nonNullDefaults',
+              'payload',
+              'resolve',
+            ]);
 
             /**
              * Add Input Object
@@ -180,6 +189,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
              *
              */
             t.field(fieldName, {
+              ...otherPluginFields,
               type:
                 typeof fieldConfig.payload === 'string' &&
                 b.hasType(fieldConfig.payload)

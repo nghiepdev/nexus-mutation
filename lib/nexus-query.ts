@@ -18,7 +18,7 @@ import {
 } from 'nexus/dist/core';
 
 import type {QueryPluginConfig, QueryPluginFieldConfig} from './types';
-import {capitalizeFirstLetter, getFirstValueOfObject} from './utils';
+import {omit, capitalizeFirstLetter, getFirstValueOfObject} from './utils';
 
 export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
   return plugin({
@@ -46,7 +46,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                   pagination?: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"]>
                 },
                 resolve: core.FieldResolver<TypeName, FieldName>
-              }
+              } & NexusGenPluginFieldConfig<TypeName, FieldName>
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
@@ -69,6 +69,18 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
             const dataName = isResultMetaValid
               ? `${fieldConfig.name}Data`
               : resultName;
+
+            const otherPluginFields = omit(fieldConfig, [
+              'args',
+              'description',
+              'filter',
+              'name',
+              'nonNullDefaults',
+              'resolve',
+              'result',
+              'resultMeta',
+              'sortFields',
+            ]);
 
             /**
              * Add Sort Object
@@ -295,6 +307,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
              *
              */
             t.field(fieldName, {
+              ...otherPluginFields,
               type:
                 isResultMetaValid && b.hasType(resultName)
                   ? resultName
