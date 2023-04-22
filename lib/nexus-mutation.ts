@@ -36,7 +36,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
                 input?: core.AllNexusArgsDefs | ((t: core.InputDefinitionBlock<TypeName>) => void),
                 payload: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | ((t: core.ObjectDefinitionBlock<TypeName>) => void) | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.ObjectDefinitionBlock<TypeName>) => void)>,
                 resolve: core.FieldResolver<TypeName, FieldName>
-              } & NexusGenPluginFieldConfig<TypeName, FieldName>
+              } & NexusGenPluginFieldConfig<TypeName, FieldName> & Pick<core.CommonOutputFieldConfig<TypeName, FieldName>, "deprecation" | "extensions">
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
@@ -50,12 +50,10 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
             const payloadName = `${fieldConfig.name}Payload`;
 
             const otherPluginFields = omit(fieldConfig, [
-              'description',
-              'input',
               'name',
-              'nonNullDefaults',
+              'input',
               'payload',
-              'resolve',
+              'nonNullDefaults',
             ]);
 
             /**

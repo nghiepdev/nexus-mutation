@@ -46,7 +46,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                   pagination?: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"]>
                 },
                 resolve: core.FieldResolver<TypeName, FieldName>
-              } & NexusGenPluginFieldConfig<TypeName, FieldName>
+              } & NexusGenPluginFieldConfig<TypeName, FieldName> & Pick<core.CommonOutputFieldConfig<TypeName, FieldName>, "deprecation" | "extensions">
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
@@ -71,15 +71,12 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
               : resultName;
 
             const otherPluginFields = omit(fieldConfig, [
-              'args',
-              'description',
-              'filter',
               'name',
-              'nonNullDefaults',
-              'resolve',
+              'filter',
               'result',
               'resultMeta',
               'sortFields',
+              'nonNullDefaults',
             ]);
 
             /**
