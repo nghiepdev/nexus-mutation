@@ -250,7 +250,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
              * Add Result Object
              *
              */
-            if (isResultMetaValid && !b.hasType(resultName)) {
+            if (!b.hasType(resultName)) {
               b.addType(
                 objectType({
                   name: resultName,
