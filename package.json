@@ -3,7 +3,7 @@
   "version": "0.6.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "description": "A plugin for Nexus that automatically creates an object type.",
+  "description": "A plugin for Nexus that automatically creates object types.",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"

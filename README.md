@@ -3,8 +3,8 @@
 [![NPM version](https://img.shields.io/npm/v/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
 [![NPM monthly download](https://img.shields.io/npm/dm/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
 
-> A plugin for Nexus that automatically creates an object type.
-> Sine 0.5 `dynamicQuery` support.
+> A plugin for Nexus that automatically creates object types.
+> From version 0.5 onwards, `dynamicQuery` is supported.
 
 ## Installation
 
@@ -16,11 +16,11 @@ $ yarn add nexus-mutation
 
 ```ts
 import {makeSchema} from 'nexus';
-import {dynamicQuery, dynamicMutation} from 'nexus-mutation';
+import {dynamicMutation, dynamicQuery} from 'nexus-mutation';
 
 // ...
 makeSchema({
-  plugins: [dynamicMutation()],
+  plugins: [dynamicMutation(), dynamicQuery()],
 });
 ```
 
@@ -70,7 +70,7 @@ export const Mutation = extendType({
 
 #### Output
 
-```gql
+```graphql
 type Mutation {
   login(input: LoginInput!): LoginPayload!
 }
@@ -89,8 +89,6 @@ type LoginPayload {
 ### Advanced (with Unions)
 
 Handling GraphQL errors like a champ with interfaces and unions
-
-> Plugin will select the first member object type to fallback resolveType
 
 #### Input
 
@@ -163,7 +161,7 @@ export const Mutation = extendType({
 
 #### Output
 
-```gql
+```graphql
 type Mutation {
   register(input: RegisterInput!): RegisterPayload!
 }
@@ -212,6 +210,62 @@ mutation Register {
       fullname
     }
   }
+}
+```
+
+### Dynamic Query
+
+#### Input
+
+```js
+import {intArg} from 'nexus';
+
+export const Query = extendType({
+  type: 'Query',
+  definition(t) {
+    t.dynamicQuery('products', {
+      name: 'GetProducts',
+      args: {
+        page: intArg(),
+        limit: intArg(),
+      },
+      result(t) {
+        t.string('name');
+        t.float('price');
+      },
+      resultMeta: {
+        list: 'list',
+        //  pagination: 'Pagination',
+      },
+      async resolve(_, args, ctx) {
+        const {page, limit} = args;
+        return {
+          items: [{name: 'iPhone 15', price: 1200}],
+          // pagination: {
+          //   total: 1000,
+          // },
+        };
+      },
+    });
+  },
+});
+```
+
+#### Output
+
+```graphql
+type GetProductsData {
+  name: String
+  price: Float
+}
+
+type GetProductsResult {
+  items: [GetProductsData!]!
+  # pagination: 'Pagination',
+}
+
+type Query {
+  products(page: Int, limit: Int): GetProductsResult!
 }
 ```
 
