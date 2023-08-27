@@ -266,7 +266,8 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                         ? nonNull(fieldConfig.result.ofNexusType)
                         : fieldConfig.result instanceof NexusListDef
                         ? list(fieldConfig.result.ofNexusType)
-                        : b.hasType(dataName)
+                        : b.hasType(dataName) &&
+                          Object.keys(fieldConfig.result).length > 1
                         ? dataName
                         : getFirstValueOfObject<string>(
                             fieldConfig.result as any
