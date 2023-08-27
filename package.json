@@ -1,6 +1,6 @@
 {
   "name": "nexus-mutation",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A plugin for Nexus that automatically creates object types.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
