@@ -29,14 +29,12 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
           name: nexusFieldName,
           typeDefinition: `<FieldName extends string>(
               fieldName: FieldName,
-              config: {
+              config: Omit<core.FieldOutConfig<TypeName, FieldName>, 'type' | 'args'> & {
                 name: string,
-                description?: string,
                 nonNullDefaults?: core.NonNullConfig,
                 input?: core.AllNexusArgsDefs | ((t: core.InputDefinitionBlock<TypeName>) => void),
-                payload: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | ((t: core.ObjectDefinitionBlock<TypeName>) => void) | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.ObjectDefinitionBlock<TypeName>) => void)>,
-                resolve: core.FieldResolver<TypeName, FieldName>
-              } & NexusGenPluginFieldConfig<TypeName, FieldName> & Pick<core.CommonOutputFieldConfig<TypeName, FieldName>, "deprecation" | "extensions">
+                payload: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | ((t: core.ObjectDefinitionBlock<TypeName>) => void) | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.ObjectDefinitionBlock<TypeName>) => void)>
+              }
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
@@ -48,13 +46,6 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
 
             const inputName = `${fieldConfig.name}Input`;
             const payloadName = `${fieldConfig.name}Payload`;
-
-            const otherPluginFields = omit(fieldConfig, [
-              'name',
-              'input',
-              'payload',
-              'nonNullDefaults',
-            ]);
 
             /**
              * Add Input Object
@@ -187,7 +178,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
              *
              */
             t.field(fieldName, {
-              ...otherPluginFields,
+              ...omit(fieldConfig, ['name']),
               type:
                 typeof fieldConfig.payload === 'string' &&
                 b.hasType(fieldConfig.payload)
@@ -201,7 +192,6 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
                   : b.hasType(payloadName)
                   ? payloadName
                   : getFirstValueOfObject<any>(fieldConfig.payload as any),
-              description: fieldConfig.description,
               args: (input => {
                 if (typeof input === 'string') {
                   return {input};
@@ -235,7 +225,6 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
                   };
                 }
               })(fieldConfig.input),
-              resolve: fieldConfig.resolve,
             });
           },
         })

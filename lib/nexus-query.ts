@@ -33,20 +33,17 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
           name: nexusFieldName,
           typeDefinition: `<FieldName extends string>(
               fieldName: FieldName,
-              config: {
+              config: Omit<core.FieldOutConfig<TypeName, FieldName>, 'type'> & {
                 name: string,
-                description?: string,
                 nonNullDefaults?: core.NonNullConfig,
-                args?: core.ArgsRecord,
                 filter?: core.AllNexusArgsDefs | ((t: core.InputDefinitionBlock<TypeName>) => void),
                 sortFields?: string[],
                 result: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | ((t: core.ObjectDefinitionBlock<TypeName>) => void) | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"] | ((t: core.ObjectDefinitionBlock<TypeName>) => void)>,
                 resultMeta?: {
                   list?: true | "list",
                   pagination?: core.NexusOutputFieldConfig<TypeName, FieldName>['type'] | Record<string, core.NexusOutputFieldConfig<TypeName, FieldName>["type"]>
-                },
-                resolve: core.FieldResolver<TypeName, FieldName>
-              } & NexusGenPluginFieldConfig<TypeName, FieldName> & Pick<core.CommonOutputFieldConfig<TypeName, FieldName>, "deprecation" | "extensions">
+                }
+              }
             ): void`,
           factory({typeDef: t, args: factoryArgs}) {
             const [fieldName, fieldConfig] = factoryArgs as [
@@ -69,15 +66,6 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
             const dataName = isResultMetaValid
               ? `${fieldConfig.name}Data`
               : resultName;
-
-            const otherPluginFields = omit(fieldConfig, [
-              'name',
-              'filter',
-              'result',
-              'resultMeta',
-              'sortFields',
-              'nonNullDefaults',
-            ]);
 
             /**
              * Add Sort Object
@@ -305,12 +293,11 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
              *
              */
             t.field(fieldName, {
-              ...otherPluginFields,
+              ...omit(fieldConfig, ['name']),
               type:
                 isResultMetaValid && b.hasType(resultName)
                   ? resultName
                   : dataName,
-              description: fieldConfig.description,
               args: {
                 ...fieldConfig.args,
                 ...(filter => {
@@ -350,7 +337,6 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
                   }
                 })(fieldConfig.sortFields),
               },
-              resolve: fieldConfig.resolve,
             });
           },
         })

@@ -1,11 +1,10 @@
 import {
   AllNexusArgsDefs,
-  ArgsRecord,
-  FieldResolver,
   InputDefinitionBlock,
   NexusOutputFieldConfig,
   NonNullConfig,
   ObjectDefinitionBlock,
+  FieldOutConfig,
 } from 'nexus/dist/core';
 
 export interface QueryPluginConfig {
@@ -38,23 +37,11 @@ export interface QueryPluginConfig {
 export type QueryPluginFieldConfig<
   TypeName extends string = any,
   FieldName extends string = any
-> = {
+> = Omit<FieldOutConfig<TypeName, FieldName>, 'type'> & {
   name: string;
-
-  description?: string;
-
-  /**
-   * Configures the default "nonNullDefaults" settings
-   *
-   */
   nonNullDefaults?: NonNullConfig;
-
-  args?: ArgsRecord;
-
   filter?: AllNexusArgsDefs | ((t: InputDefinitionBlock<TypeName>) => void);
-
   sortFields?: string[];
-
   result:
     | NexusOutputFieldConfig<TypeName, FieldName>['type']
     | ((t: ObjectDefinitionBlock<TypeName>) => void)
@@ -63,16 +50,13 @@ export type QueryPluginFieldConfig<
         | NexusOutputFieldConfig<TypeName, FieldName>['type']
         | ((t: ObjectDefinitionBlock<TypeName>) => void)
       >;
-
   resultMeta?: {
     list?: true | 'list';
     pagination?:
       | NexusOutputFieldConfig<TypeName, FieldName>['type']
       | Record<string, NexusOutputFieldConfig<TypeName, FieldName>['type']>;
   };
-
-  resolve: FieldResolver<TypeName, FieldName>;
-} & NexusGenPluginFieldConfig<TypeName, FieldName>;
+};
 
 export interface MutationPluginConfig {
   /**
@@ -92,19 +76,10 @@ export interface MutationPluginConfig {
 export type MutationPluginFieldConfig<
   TypeName extends string = any,
   FieldName extends string = any
-> = {
+> = Omit<FieldOutConfig<TypeName, FieldName>, 'type' | 'args'> & {
   name: string;
-
-  description?: string;
-
-  /**
-   * Configures the default "nonNullDefaults" settings
-   *
-   */
   nonNullDefaults?: NonNullConfig;
-
   input?: AllNexusArgsDefs | ((t: InputDefinitionBlock<TypeName>) => void);
-
   payload:
     | NexusOutputFieldConfig<TypeName, FieldName>['type']
     | ((t: ObjectDefinitionBlock<TypeName>) => void)
@@ -113,6 +88,4 @@ export type MutationPluginFieldConfig<
         | NexusOutputFieldConfig<TypeName, FieldName>['type']
         | ((t: ObjectDefinitionBlock<TypeName>) => void)
       >;
-
-  resolve: FieldResolver<TypeName, FieldName>;
-} & NexusGenPluginFieldConfig<TypeName, FieldName>;
+};
