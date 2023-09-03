@@ -1,6 +1,6 @@
 {
   "name": "nexus-mutation",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A plugin for Nexus that automatically creates object types.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,13 +17,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup-node index.ts --dts",
+    "build": "npx tsup@7 tsup-node index.ts --dts",
+    "prebuild": "npx rimraf dist && npm i tsup@7 --no-save",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "graphql": "^16.6.0",
     "nexus": "^1.3.0",
-    "tsup": "^7.1.0",
     "typescript": "^5.0.4"
   },
   "peerDependencies": {
