@@ -71,7 +71,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
             if (typeof fieldConfig.payload === 'string') {
               if (!b.hasType(fieldConfig.payload)) {
                 throw new Error(
-                  `Nexus Mutation Plugin: ${payloadName} must have a type`
+                  `Nexus Mutation Plugin: The ${fieldConfig.payload} must have a type.`
                 );
               }
             } else if (typeof fieldConfig.payload === 'function') {
@@ -100,7 +100,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
 
               if (totalPayload === 0) {
                 throw new Error(
-                  `Nexus Mutation Plugin: ${payloadName} must have at least one type`
+                  `Nexus Mutation Plugin: The ${fieldName}.payload field must have at least one type.`
                 );
               }
 
@@ -169,7 +169,7 @@ export const dynamicMutation = (pluginConfig?: MutationPluginConfig) => {
               }
             } else {
               throw new Error(
-                `Nexus Mutation Plugin: ${payloadName} must be an object, string or function.`
+                `Nexus Mutation Plugin: The ${fieldName}.payload field is invalid.`
               );
             }
 

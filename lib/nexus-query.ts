@@ -16,6 +16,7 @@ import {
   NexusNullDef,
   UnionMembers,
 } from 'nexus/dist/core';
+import {singular} from 'pluralize';
 
 import type {QueryPluginConfig, QueryPluginFieldConfig} from './types';
 import {omit, capitalizeFirstLetter, getFirstValueOfObject} from './utils';
@@ -64,7 +65,13 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
             const sortInputName = `${fieldConfig.name}SortInput`;
             const resultName = `${fieldConfig.name}Result`;
             const dataName = isResultMetaValid
-              ? `${fieldConfig.name}Data`
+              ? (name => {
+                  const typeName = singular(name);
+                  if (b.hasType(typeName)) {
+                    return `${typeName}Item`;
+                  }
+                  return typeName;
+                })(fieldConfig.name)
               : resultName;
 
             /**
@@ -132,7 +139,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
             if (typeof fieldConfig.result === 'string') {
               if (!b.hasType(fieldConfig.result)) {
                 throw new Error(
-                  `Nexus Query Plugin: ${dataName} must have a type`
+                  `Nexus Query Plugin: The ${fieldConfig.result} must have a type.`
                 );
               }
             } else if (typeof fieldConfig.result === 'function') {
@@ -161,7 +168,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
 
               if (totalResult === 0) {
                 throw new Error(
-                  `Nexus Query Plugin: ${dataName} must have at least one type`
+                  `Nexus Query Plugin: The ${fieldName}.result field must have at least one type.`
                 );
               }
 
@@ -230,7 +237,7 @@ export const dynamicQuery = (pluginConfig?: QueryPluginConfig) => {
               }
             } else {
               throw new Error(
-                `Nexus Query Plugin: ${dataName} must be an object, string or function.`
+                `Nexus Query Plugin: The ${fieldName}.result field is invalid.`
               );
             }
 
