@@ -4,7 +4,6 @@
 [![NPM monthly download](https://img.shields.io/npm/dm/nexus-mutation.svg)](https://www.npmjs.com/package/nexus-mutation)
 
 > A plugin for Nexus that automatically creates object types.
-> From version 0.5 onwards, `dynamicQuery` is supported.
 
 ## Installation
 
